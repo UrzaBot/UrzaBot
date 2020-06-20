@@ -1,6 +1,3 @@
-const server = require('./server.js');
+const bot = require('./bot/bot');
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log("Server Running");
-});
+bot.login(process.env.BOT_TOKEN);

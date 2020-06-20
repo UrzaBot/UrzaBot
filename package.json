@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "server": "nodemon index.js",
+    "server": "dotenv nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/ddhorstman/UrzaBot#readme",
   "devDependencies": {
+    "dotenv-cli": "^3.1.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "helmet": "^3.23.1"
+    "discord.js": "^12.2.0",
+    "mtgsdk": "^0.4.3"
   }
 }
