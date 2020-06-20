@@ -1,0 +1,29 @@
+{
+  "name": "urzabot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddhorstman/UrzaBot.git"
+  },
+  "author": "David Horstman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ddhorstman/UrzaBot/issues"
+  },
+  "homepage": "https://github.com/ddhorstman/UrzaBot#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^3.23.1"
+  }
+}
