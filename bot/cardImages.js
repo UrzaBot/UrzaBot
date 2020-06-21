@@ -83,7 +83,8 @@ function pollForCorrectCard(name, msg, matchingCards) {
         .reduce(
           (list, card, idx) =>
             idx === emojisForMultipleCardResults.length
-              ? list + "❌ None of these\n(Too many results to show them all...) "
+              ? list +
+                "❌ None of these\n(Too many results to show them all...) "
               : idx < emojisForMultipleCardResults.length
               ? list + `${discordEmojiForNumber(idx)} ${card.name}\n`
               : list,
@@ -91,7 +92,7 @@ function pollForCorrectCard(name, msg, matchingCards) {
         )
         .slice(0, -1)}`
     )
-    .then(pollMessage => {
+    .then(async pollMessage => {
       const filter = (reaction, user) =>
         (emojisForMultipleCardResults.includes(reaction.emoji.name) ||
           reaction.emoji.name === "❌") &&
@@ -101,7 +102,7 @@ function pollForCorrectCard(name, msg, matchingCards) {
         time: 1000 * 60 * 5,
       });
       //console.log(matchingCards.length);
-      Promise.all(
+      const doneReacting = Promise.all(
         matchingCards.map((x, idx) => {
           if (idx === emojisForMultipleCardResults.length + 1) {
             return pollMessage.react("❌");
@@ -109,9 +110,7 @@ function pollForCorrectCard(name, msg, matchingCards) {
           const emoji = discordEmojiForNumber(idx);
           return emoji ? pollMessage.react(emoji) : Promise.resolve();
         })
-        //an error will be thrown if a user answers the poll before all reactions post
-        //we can safely ignore it
-      ).catch(() => null);
+      );
 
       collector
         .on("collect", r => {
@@ -123,7 +122,9 @@ function pollForCorrectCard(name, msg, matchingCards) {
             sendEmbed(msg, card);
           }
         })
-        .on("end", r => {
+        .on("end", async r => {
+          pollMessage.edit("Done!");
+          await doneReacting;
           pollMessage.delete();
         });
     });
