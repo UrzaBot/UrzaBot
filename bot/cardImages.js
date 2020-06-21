@@ -6,12 +6,12 @@ function replyWithCardImage(msg) {
   if (author.bot) return;
   const cardInserts = content.match(/{(.+?)}/g);
   if (!cardInserts) return;
-  let partialMatches = [];
   Promise.all(
     cardInserts
-      .map(match => titleCase(match))
+      .map(cardInsert => titleCase(cardInsert))
       .map(name =>
         mtg.card.where({ name }).then(cards => {
+          let partialMatches = [];
           let exactMatches = cards
             .reduce((list, current) => {
               const foundIndex = list.findIndex(n => n.name === current.name);
@@ -24,7 +24,9 @@ function replyWithCardImage(msg) {
               return list;
             }, [])
             .filter(card => {
-              if (card.name.toLowerCase() === name.toLowerCase()) return true;
+              if (card.name.toLowerCase() === name.toLowerCase()) {
+                return true;
+              }
               const firstWord = card.name.split(" ")[0];
               if (firstWord.includes(name) && !firstWord.includes("'s")) {
                 return true;
@@ -60,7 +62,7 @@ function sendEmbed(msg, card) {
       .setTitle(card.name)
       .setImage(card.imageUrl);
   } else {
-    console.log(card);
+    //console.log(card);
     embed = new Discord.MessageEmbed()
       .setTitle(card.name)
       .addFields(
@@ -80,7 +82,11 @@ function pollForCorrectCard(name, msg, matchingCards) {
       `I found several cards matching ${name}. Which did you mean?\n${matchingCards
         .reduce(
           (list, card, idx) =>
-            list + `${discordEmojiForNumber(idx)} ${card.name}\n`,
+            idx === emojisForMultipleCardResults.length
+              ? list + "Too many results to show them all..."
+              : idx < emojisForMultipleCardResults.length
+                ? list + `${discordEmojiForNumber(idx)} ${card.name}\n`
+                : list,
           ""
         )
         .slice(0, -1)}`
@@ -96,6 +102,7 @@ function pollForCorrectCard(name, msg, matchingCards) {
       //console.log(matchingCards.length);
       Promise.all(
         matchingCards.map((x, idx) => {
+          if (idx > emojisForMultipleCardResults.length) return;
           const emoji = discordEmojiForNumber(idx);
           return emoji ? pollMessage.react(emoji) : Promise.resolve();
         })
@@ -129,12 +136,9 @@ const emojisForMultipleCardResults = [
   "🅱️",
   "🤍",
   "💙",
-  "🖤",
+  "🤎",
   "❤️",
   "💚",
-  "♠️",
-  "♦️",
-  "♣️",
 ];
 function discordEmojiForNumber(number) {
   return number < emojisForMultipleCardResults.length
