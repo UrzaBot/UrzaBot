@@ -51,64 +51,79 @@ client.on("message", msg => {
                 )
                 .slice(0, -1)}`
             )
-            .then(msg => {
-              for (let i = 0; i < matchingCards.length; i++) {
-                console.log(discordEmojiForNumber(i));
-               // msg.react(discordEmojiForNumber(i));
-              }
+            .then(async pollMessage => {
+              const filter = (reaction, user) =>
+                emojisForMultipleCardResults.includes(reaction.emoji.name) &&
+                user.id !== pollMessage.author.id;
+              const collector = pollMessage.createReactionCollector(filter, {
+                max: 1,
+                time: 1000 * 60 * 5,
+              });
+
+              Promise.all(
+                matchingCards.map((x, idx) => {
+                  const emoji = discordEmojiForNumber(idx);
+                  return emoji ? pollMessage.react(emoji) : Promise.resolve();
+                })
+              ).catch(() => console.log("poll terminated early"));
+
+              collector
+                .on("collect", r => {
+                  const idx = emojisForMultipleCardResults.findIndex(
+                    item => item === r.emoji.name
+                  );
+                  const card = matchingCards[idx];
+                  const embed = new Discord.MessageEmbed()
+                    .setTitle(card.name)
+                    .setImage(card.imageUrl);
+                  channel.send(embed);
+                })
+                .on("end", r => {
+                  pollMessage.delete();
+                });
             });
         }
       })
     );
-  function discordEmojiForNumber(number) {
-    const emojis = [
-      ":one:",
-      ":two:",
-      ":three:",
-      ":four:",
-      ":five:",
-      ":six:",
-      ":seven:",
-      ":eight:",
-      ":nine:",
-      ":ten:",
-      ":a:",
-      ":b:",
-      ":c:",
-      ":d:",
-      ":e:",
-      ":f:",
-      ":g:",
-      ":h:",
-      ":i:",
-      ":j:",
-      ":k:",
-      ":l:",
-      ":m:",
-      ":n:",
-      ":o:",
-      ":p:",
-      ":q:",
-      ":r:",
-      ":s:",
-      ":t:",
-      ":u:",
-      ":v:",
-      ":w:",
-      ":x:",
-      ":y:",
-      ":z:",
-    ];
-    return number < 36 ? emojis[number] : null;
-  }
-  function titleCase(string) {
-    return string
-      .slice(1, -1)
-      .toLowerCase()
-      .split(" ")
-      .map(word => word[0].toUpperCase() + word.slice(1))
-      .join(" ");
-  }
 });
+
+/*----------------------------------------------------------------------------*/
+/* Helper functions
+/*----------------------------------------------------------------------------*/
+const emojisForMultipleCardResults = [
+  "1️⃣",
+  "2️⃣",
+  "3️⃣",
+  "4️⃣",
+  "5️⃣",
+  "6️⃣",
+  "7️⃣",
+  "8️⃣",
+  "9️⃣",
+  "0️⃣",
+  "🅰️",
+  "🅱️",
+  "🤍",
+  "💙",
+  "🖤",
+  "❤️",
+  "💚",
+  "♠️",
+  "♦️",
+  "♣️",
+];
+function discordEmojiForNumber(number) {
+  return number < emojisForMultipleCardResults.length
+    ? emojisForMultipleCardResults[number]
+    : null;
+}
+function titleCase(string) {
+  return string
+    .slice(1, -1)
+    .toLowerCase()
+    .split(" ")
+    .map(word => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 module.exports = client;
