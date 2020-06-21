@@ -41,10 +41,7 @@ function replyWithCardImage(msg) {
             }
           } else if (exactMatches.length === 1) {
             let card = exactMatches[0];
-            const embed = new Discord.MessageEmbed()
-              .setTitle(card.name)
-              .setImage(card.imageUrl);
-            msg.channel.send(embed);
+            sendEmbed(msg, card);
           } else {
             pollForCorrectCard(name, msg, exactMatches);
           }
@@ -56,6 +53,27 @@ function replyWithCardImage(msg) {
 /*----------------------------------------------------------------------------*/
 /* Helper functions
 /*----------------------------------------------------------------------------*/
+function sendEmbed(msg, card) {
+  let embed;
+  if (card.imageUrl) {
+    embed = new Discord.MessageEmbed()
+      .setTitle(card.name)
+      .setImage(card.imageUrl);
+  } else {
+    console.log(card);
+    embed = new Discord.MessageEmbed()
+      .setTitle(card.name)
+      .addFields(
+        { name: "Type", value: card.type, inline: true },
+        { name: "Cost", value: card.manaCost, inline: true },
+        { name: "Text", value: card.text },
+        { name: "Set", value: card.setName, inline: true },
+        { name: "Rarity", value: card.rarity, inline: true }
+      );
+  }
+  msg.channel.send(embed);
+}
+
 function pollForCorrectCard(name, msg, matchingCards) {
   return msg.channel
     .send(
@@ -89,10 +107,7 @@ function pollForCorrectCard(name, msg, matchingCards) {
             item => item === r.emoji.name
           );
           const card = matchingCards[idx];
-          const embed = new Discord.MessageEmbed()
-            .setTitle(card.name)
-            .setImage(card.imageUrl);
-          msg.channel.send(embed);
+          sendEmbed(msg, card);
         })
         .on("end", r => {
           pollMessage.delete();
