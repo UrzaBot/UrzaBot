@@ -83,17 +83,18 @@ function pollForCorrectCard(name, msg, matchingCards) {
         .reduce(
           (list, card, idx) =>
             idx === emojisForMultipleCardResults.length
-              ? list + "Too many results to show them all..."
+              ? list + "❌ None of these\n(Too many results to show them all...) "
               : idx < emojisForMultipleCardResults.length
-                ? list + `${discordEmojiForNumber(idx)} ${card.name}\n`
-                : list,
+              ? list + `${discordEmojiForNumber(idx)} ${card.name}\n`
+              : list,
           ""
         )
         .slice(0, -1)}`
     )
     .then(pollMessage => {
       const filter = (reaction, user) =>
-        emojisForMultipleCardResults.includes(reaction.emoji.name) &&
+        (emojisForMultipleCardResults.includes(reaction.emoji.name) ||
+          reaction.emoji.name === "❌") &&
         user.id !== pollMessage.author.id;
       const collector = pollMessage.createReactionCollector(filter, {
         max: 1,
@@ -102,10 +103,14 @@ function pollForCorrectCard(name, msg, matchingCards) {
       //console.log(matchingCards.length);
       Promise.all(
         matchingCards.map((x, idx) => {
-          if (idx > emojisForMultipleCardResults.length) return;
+          if (idx === emojisForMultipleCardResults.length + 1) {
+            return pollMessage.react("❌");
+          }
           const emoji = discordEmojiForNumber(idx);
           return emoji ? pollMessage.react(emoji) : Promise.resolve();
         })
+        //an error will be thrown if a user answers the poll before all reactions post
+        //we can safely ignore it
       ).catch(() => null);
 
       collector
@@ -113,8 +118,10 @@ function pollForCorrectCard(name, msg, matchingCards) {
           const idx = emojisForMultipleCardResults.findIndex(
             item => item === r.emoji.name
           );
-          const card = matchingCards[idx];
-          sendEmbed(msg, card);
+          if (idx !== -1) {
+            const card = matchingCards[idx];
+            sendEmbed(msg, card);
+          }
         })
         .on("end", r => {
           pollMessage.delete();
