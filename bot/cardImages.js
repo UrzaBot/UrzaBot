@@ -142,14 +142,30 @@ async function generateEmbed(
       .get(
         `https://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[${card.name}]`
       )
-      .then(r => r.data.match(/multiverseid=(\d+)"/)[0].slice(13, -1));
+      .then(r => {
+        const matches = r.data.match(/multiverseid=(\d+)"/);
+        return matches ? matches[0].slice(13, -1) : null;
+      });
     if (multiverseid) {
       card.imageUrl = `https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${multiverseid}&type=card`;
     }
   }
+  const colors = card.colors;
+  const isLand = card.types.includes("Land");
+  const monoColor = colors.length === 1;
+  const colorless = colors.length === 0;
   embed = new Discord.MessageEmbed()
     .setTitle(
       `${card.name}${card.manaCost ? "\t" + convertText(card.manaCost) : ""}`
+    )
+    .setColor(
+      isLand
+        ? "#654321"
+        : colorless
+        ? "LIGHT_GREY"
+        : monoColor
+        ? colors[0].toUpperCase()
+        : "GOLD"
     )
     .setDescription(card.type);
   if (card.text) {
@@ -168,10 +184,10 @@ async function generateEmbed(
   }
   if (isFlipCard) {
     embed.addFields({
-      name: "Flip Card",
+      name: "Modal Card",
       value: allowFlipping
-        ? `React with ${flipSymbol} to flip to ${otherName}`
-        : `Flips to ${otherName}`,
+        ? `React with ${flipSymbol} to switch to ${otherName}`
+        : `Switches to ${otherName}`,
       inline: true,
     });
   }
