@@ -9,7 +9,7 @@ function replyWithCardImage(msg) {
   if (!cardInserts) return;
   let loadingMessage;
   msg
-    .reply(`Loading card info on ${cardInserts.map(x => titleCase(x) + ", ")}`)
+    .reply(`Loading card info on ${cardInserts.map(x => titleCase(x) + " ")}`)
     .then(lm => (loadingMessage = lm));
   Promise.all(
     cardInserts
