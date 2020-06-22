@@ -14,7 +14,9 @@ function parseArticle(article) {
   const month = dateSpan.querySelector("span.month").firstChild.rawText.trim();
   const day = dateSpan.querySelector("span.day").firstChild.rawText.trim();
   const year = dateSpan.querySelector("span.year").firstChild.rawText.trim();
-  const date = `${year}-${monthNameToNumber(month)}-${day}`;
+  const date = `${year}-${monthNameToNumber(month)}-${
+    day < 10 ? "0" + day : day
+  }`;
   const title = body.querySelector("div.title h3").firstChild.rawText;
   const author = body.querySelector("span.author").firstChild.rawText.slice(3);
   return { url, date, imageUrl, title, category, author };
