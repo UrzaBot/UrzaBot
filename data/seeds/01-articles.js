@@ -1,14 +1,17 @@
 const { getParsedArticles } = require("../../utils/mtgNewsArticles");
 
 exports.seed = async function (knex) {
-  const list = await getParsedArticles();
-  list.map(console.log);
-  //const body = root.childNodes[2]; body.childNodes.map((item, idx)=>console.log(`[${idx}]: ${item}`))
-  // const article = root.childNodes[1]; console.log(article.rawAttrs);
-  // const image = root.childNodes[2]; console.log(image);
-  // return knex("roles").insert([
-  //   { name: "student" },
-  //   { name: "helper" },
-  //   { name: "admin" },
-  // ]);
+  let list = await getParsedArticles();
+  for (let i = 10; i < 50; i+=10) {
+    const additionalList = await getParsedArticles(
+      `https://magic.wizards.com/en/search-magic-ajax?offset=${i}`
+    );
+    list = list.concat(additionalList);
+  }
+  return knex("articles").insert(
+    list.map(({ imageUrl, ...article }) => ({
+      ...article,
+      image_url: imageUrl,
+    }))
+  );
 };
