@@ -152,7 +152,7 @@ async function generateEmbed(
       `${card.name}${card.manaCost ? "\t" + convertText(card.manaCost) : ""}`
     )
     .setDescription(card.type);
-  if (embed.text) {
+  if (card.text) {
     embed.addField("Text", convertText(card.text));
   }
   embed.addFields(
