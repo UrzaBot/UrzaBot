@@ -53,4 +53,4 @@ async function getParsedArticles(
   return articles.map(article => parseArticle(article));
 }
 
-module.exports = { getParsedArticles };
+module.exports = { getArticles, getParsedArticles, parseArticle };

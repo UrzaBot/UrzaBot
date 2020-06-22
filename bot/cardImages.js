@@ -1,5 +1,6 @@
 const mtg = require("mtgsdk");
 const Discord = require("discord.js");
+const axios = require("axios");
 
 function replyWithCardImage(msg) {
   const { content, author } = msg;
@@ -55,8 +56,17 @@ function replyWithCardImage(msg) {
 /*----------------------------------------------------------------------------*/
 /* Helper functions
 /*----------------------------------------------------------------------------*/
-function sendEmbed(msg, card) {
+async function sendEmbed(msg, card) {
   let embed;
+  if (!card.imageUrl) {
+    const multiverseid = await axios
+      .get(
+        `https://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[${card.name}]`
+      )
+      .then(r => r.data.match(/multiverseid=(\d+)"/)[0].slice(13, -1));
+    if (multiverseid)
+      card.imageUrl = `https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${multiverseid}&type=card`;
+  }
   if (card.imageUrl) {
     embed = new Discord.MessageEmbed()
       .setTitle(card.name)
