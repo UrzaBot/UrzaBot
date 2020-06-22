@@ -150,9 +150,12 @@ async function generateEmbed(
       card.imageUrl = `https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${multiverseid}&type=card`;
     }
   }
-  const colors = card.colors;
+  let colors = card.colors;
   const isLand = card.types.includes("Land");
   const monoColor = colors.length === 1;
+  if (monoColor && colors.includes("White")) {
+    colors[0] = "#fefefe";
+  }
   const colorless = colors.length === 0;
   embed = new Discord.MessageEmbed()
     .setTitle(
@@ -162,7 +165,7 @@ async function generateEmbed(
       isLand
         ? "#654321"
         : colorless
-        ? "LIGHT_GREY"
+        ? "DARKER_GREY"
         : monoColor
         ? colors[0].toUpperCase()
         : "GOLD"
