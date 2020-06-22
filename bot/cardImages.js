@@ -70,6 +70,7 @@ async function sendEmbed(msg, card) {
   if (card.imageUrl) {
     embed = new Discord.MessageEmbed()
       .setTitle(card.name)
+      .addField(card.type, card.text)
       .setImage(card.imageUrl);
   } else {
     //console.log(card);
