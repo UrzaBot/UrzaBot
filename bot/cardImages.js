@@ -7,6 +7,10 @@ function replyWithCardImage(msg) {
   if (author.bot) return;
   const cardInserts = content.match(/{(.+?)}/g);
   if (!cardInserts) return;
+  let loadingMessage;
+  msg
+    .reply(`Loading card info on ${cardInserts.map(x => titleCase(x) + ", ")}`)
+    .then(lm => (loadingMessage = lm));
   Promise.all(
     cardInserts
       .map(cardInsert => titleCase(cardInsert))
@@ -36,6 +40,10 @@ function replyWithCardImage(msg) {
               return false;
             });
           //matchingCards.map(c => console.log(c.name));
+          if (loadingMessage) {
+            loadingMessage.delete();
+            loadingMessage = null;
+          }
           if (exactMatches.length === 0) {
             if (partialMatches.length === 0) {
               msg.reply(`I couldn't find a card named ${name}`);
@@ -120,7 +128,12 @@ function convertText(text) {
   return text;
 }
 
-async function generateEmbed(card, isFlipCard, otherName) {
+async function generateEmbed(
+  card,
+  isFlipCard,
+  otherName,
+  allowFlipping = true
+) {
   const flipSymbol = "↪️";
   let embed;
   if (!card.imageUrl) {
@@ -152,7 +165,9 @@ async function generateEmbed(card, isFlipCard, otherName) {
   if (isFlipCard) {
     embed.addFields({
       name: "Flip Card",
-      value: `React with ${flipSymbol} to flip to ${otherName}`,
+      value: allowFlipping
+        ? `React with ${flipSymbol} to flip to ${otherName}`
+        : `Flips to ${otherName}`,
       inline: true,
     });
   }
@@ -177,12 +192,21 @@ async function sendEmbed(msg, card) {
       time: 1000 * 60 * 5,
     });
     let flipCount = 0;
+    let flippedCard;
     let flippedEmbed;
-    collector.on("collect", async r => {
+    collector.on("collect", async (r, user) => {
       if (flipCount !== 0) {
+        r.users.remove(user.id);
         flipCount++;
-        return embedMsg.edit(flipCount % 2 == 0 ? flippedEmbed : originalEmbed);
+        return embedMsg.edit(
+          flipCount % 2 === 1 ? flippedEmbed : originalEmbed
+        );
       }
+      r.remove();
+      const loadingEmbed = new Discord.MessageEmbed()
+        .setTitle(otherName)
+        .addField("Status", "Loading card info...");
+      embedMsg.edit(loadingEmbed);
       await mtg.card
         .where({ name: otherName })
         .then(cards =>
@@ -197,13 +221,21 @@ async function sendEmbed(msg, card) {
             .filter(card => card.name.toLowerCase() === otherName.toLowerCase())
         )
         .then(async ([card]) => {
+          flippedCard = card;
           flipCount++;
           const isFlipCard = true;
           const otherName =
             isFlipCard && card.names.filter(n => n !== card.name)[0];
-          flippedEmbed = await generateEmbed(card, isFlipCard, otherName);
+          flippedEmbed = await generateEmbed(card, isFlipCard, otherName, true);
           embedMsg.edit(flippedEmbed);
+          await embedMsg.react(flipSymbol);
         });
+    });
+    collector.on("end", async () => {
+      await embedMsg.reactions.removeAll();
+      await embedMsg.edit(
+        await generateEmbed(flippedCard, true, card.name, false)
+      );
     });
   });
 }
@@ -234,22 +266,15 @@ function pollForCorrectCard(name, msg, matchingCards) {
         max: 1,
         time: 1000 * 60 * 5,
       });
-      //console.log(matchingCards.length);
-      const doneReacting = Promise.all(
-        matchingCards.map((x, idx, { length }) => {
-          if (idx === emojisForMultipleCardResults.length + 1) {
-            return pollMessage.react(xMark);
-          }
-          const emoji = discordEmojiForNumber(idx);
-          return emoji
-            ? pollMessage
-                .react(emoji)
-                .then(() =>
-                  idx === length - 1 ? pollMessage.react(xMark) : null
-                )
-            : Promise.resolve();
+      const emojis = matchingCards
+        .map((x, idx) => {
+          if (idx === emojisForMultipleCardResults.length + 1) return xMark;
+          return discordEmojiForNumber(idx) || null;
         })
-      );
+        .filter(x => x)
+        .concat([xMark]);
+      const pollReactions = emojis.map(emoji => pollMessage.react(emoji));
+      const doneReacting = Promise.all(pollReactions);
 
       collector
         .on("collect", r => {
