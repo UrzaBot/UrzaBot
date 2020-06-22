@@ -19,9 +19,9 @@ function replyWithCardImage(msg) {
               if (foundIndex === -1) {
                 return list.concat(current);
               }
-              if (current.imageUrl) {
-                list[foundIndex] = current;
-              }
+              // if (current.imageUrl) {
+              //   list[foundIndex] = current;
+              // }
               return list;
             }, [])
             .filter(card => {
@@ -116,7 +116,7 @@ function convertText(text) {
     });
     return text;
   }
-  text.replace(/{(.+?)}/g, matcher);
+  text && text.replace(/{(.+?)}/g, matcher);
   return text;
 }
 
@@ -132,18 +132,23 @@ async function sendEmbed(msg, card) {
       card.imageUrl = `https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${multiverseid}&type=card`;
     }
   }
+  console.log(card.names);
   embed = new Discord.MessageEmbed()
-    .setTitle(card.name + "\t" + convertText(card.manaCost))
-    .addField(card.type, convertText(card.text))
+    .setTitle(
+      `${card.name}${card.manaCost ? "\t" + convertText(card.manaCost) : ""}`
+    )
+    .addField(card.type, card.text ? convertText(card.text) : "(Vanilla)")
     .addFields(
-      { name: "Set", value: card.setName, inline: true },
-      { name: "Rarity", value: card.rarity, inline: true },
-      {
-        name: card.loyalty ? "Loyalty" : "Power/Toughness",
-        value: card.loyalty || `${card.power}/${card.toughness}`,
-        inline: true,
-      }
+      //{ name: "Set", value: card.setName, inline: true },
+      { name: "Rarity", value: card.rarity, inline: true }
     );
+  if (card.power || card.loyalty) {
+    embed.addFields({
+      name: card.loyalty ? "Loyalty" : "Power/Toughness",
+      value: card.loyalty || `${card.power}/${card.toughness}`,
+      inline: true,
+    });
+  }
   if (card.imageUrl) {
     embed.setImage(card.imageUrl);
   }
