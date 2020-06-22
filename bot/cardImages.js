@@ -66,7 +66,7 @@ function replyWithCardImage(msg) {
 /*----------------------------------------------------------------------------*/
 function convertText(text) {
   const symbolsMap = {
-    "W/B":"<:manawb:724502415922954270>",
+    "W/B": "<:manawb:724502415922954270>",
     X: "<:manax:724462885149081683>",
     "W/U": "<:manawu:724461530531495977>",
     "U/B": "<:manaub:724461530426507324>",
@@ -251,12 +251,16 @@ function pollForCorrectCard(name, msg, matchingCards) {
             idx < emojisForMultipleCardResults.length
               ? list +
                 `${discordEmojiForNumber(idx)} ${card.name}\n${
-                  idx === length - 1 ? "❌ (None of these)\n" : ""
+                  idx === length - 1 ? "❌ (None of these)" : ""
                 }`
               : list,
           ""
         )
-        .slice(0, -1)}`
+        .concat(
+          matchingCards.length > emojisForMultipleCardResults.length
+            ? "\nToo many results to show them all..."
+            : ""
+        )}`
     )
     .then(async pollMessage => {
       const filter = (reaction, user) =>
