@@ -173,7 +173,7 @@ async function generateEmbed(
     });
   }
   if (card.imageUrl) {
-    embed.setImage(card.imageUrl);
+    embed.setThumbnail(card.imageUrl);
   }
   return embed;
 }
