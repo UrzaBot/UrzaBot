@@ -1,5 +1,5 @@
 const bot = require("./bot/bot");
-const server = require("./server");
+const server = require("./api/server");
 
 const PORT = process.env.PORT || 5000;
 
