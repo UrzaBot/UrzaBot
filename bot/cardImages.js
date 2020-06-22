@@ -66,6 +66,7 @@ function replyWithCardImage(msg) {
 /*----------------------------------------------------------------------------*/
 function convertText(text) {
   const symbolsMap = {
+    "W/B":"<:manawb:724502415922954270>",
     X: "<:manax:724462885149081683>",
     "W/U": "<:manawu:724461530531495977>",
     "U/B": "<:manaub:724461530426507324>",
