@@ -121,6 +121,11 @@ function convertText(text) {
 }
 
 async function sendEmbed(msg, card) {
+  const flipSymbol = "↪️";
+  const isFlipCard = card.names && card.names.length > 1;
+  const otherName = card.names.filter(n => n !== card.name)[0];
+
+  console.log(otherName);
   let embed;
   if (!card.imageUrl) {
     const multiverseid = await axios
@@ -132,7 +137,6 @@ async function sendEmbed(msg, card) {
       card.imageUrl = `https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${multiverseid}&type=card`;
     }
   }
-  console.log(card.names);
   embed = new Discord.MessageEmbed()
     .setTitle(
       `${card.name}${card.manaCost ? "\t" + convertText(card.manaCost) : ""}`
@@ -142,6 +146,13 @@ async function sendEmbed(msg, card) {
       //{ name: "Set", value: card.setName, inline: true },
       { name: "Rarity", value: card.rarity, inline: true }
     );
+  if (isFlipCard) {
+    embed.addFields({
+      name: "Flip Card",
+      value: `React with ${flipSymbol} to flip to ${otherName}`,
+      inline: true,
+    });
+  }
   if (card.power || card.loyalty) {
     embed.addFields({
       name: card.loyalty ? "Loyalty" : "Power/Toughness",
@@ -152,7 +163,18 @@ async function sendEmbed(msg, card) {
   if (card.imageUrl) {
     embed.setImage(card.imageUrl);
   }
-  msg.channel.send(embed);
+  msg.channel.send(embed).then(embedMsg => {
+    if (!isFlipCard) return;
+    embedMsg.react(flipSymbol);
+    const filter = (reaction, user) =>
+      reaction.emoji.name === flipSymbol && user.id !== embedMsg.author.id;
+    const collector = embedMsg.createReactionCollector(filter, {
+      time: 1000 * 60 * 5,
+    });
+    collector.on("collect", r => {
+      console.log("Card flipped!");
+    });
+  });
 }
 
 function pollForCorrectCard(name, msg, matchingCards) {
