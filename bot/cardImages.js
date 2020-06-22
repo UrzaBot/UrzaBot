@@ -151,11 +151,14 @@ async function generateEmbed(
     .setTitle(
       `${card.name}${card.manaCost ? "\t" + convertText(card.manaCost) : ""}`
     )
-    .addField(card.type, card.text ? convertText(card.text) : "(Vanilla)")
-    .addFields(
-      //{ name: "Set", value: card.setName, inline: true },
-      { name: "Rarity", value: card.rarity, inline: true }
-    );
+    .setDescription(card.type);
+  if (embed.text) {
+    embed.addField("Text", convertText(card.text));
+  }
+  embed.addFields(
+    //{ name: "Set", value: card.setName, inline: true },
+    { name: "Rarity", value: card.rarity, inline: true }
+  );
   if (card.power || card.loyalty) {
     embed.addFields({
       name: card.loyalty ? "Loyalty" : "Power/Toughness",
