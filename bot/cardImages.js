@@ -120,12 +120,8 @@ function convertText(text) {
   return text;
 }
 
-async function sendEmbed(msg, card) {
+async function generateEmbed(card, isFlipCard, otherName) {
   const flipSymbol = "↪️";
-  const isFlipCard = card.names && card.names.length > 1;
-  const otherName = card.names.filter(n => n !== card.name)[0];
-
-  console.log(otherName);
   let embed;
   if (!card.imageUrl) {
     const multiverseid = await axios
@@ -146,13 +142,6 @@ async function sendEmbed(msg, card) {
       //{ name: "Set", value: card.setName, inline: true },
       { name: "Rarity", value: card.rarity, inline: true }
     );
-  if (isFlipCard) {
-    embed.addFields({
-      name: "Flip Card",
-      value: `React with ${flipSymbol} to flip to ${otherName}`,
-      inline: true,
-    });
-  }
   if (card.power || card.loyalty) {
     embed.addFields({
       name: card.loyalty ? "Loyalty" : "Power/Toughness",
@@ -160,10 +149,26 @@ async function sendEmbed(msg, card) {
       inline: true,
     });
   }
+  if (isFlipCard) {
+    embed.addFields({
+      name: "Flip Card",
+      value: `React with ${flipSymbol} to flip to ${otherName}`,
+      inline: true,
+    });
+  }
   if (card.imageUrl) {
     embed.setImage(card.imageUrl);
   }
-  msg.channel.send(embed).then(embedMsg => {
+  return embed;
+}
+
+async function sendEmbed(msg, card) {
+  const flipSymbol = "↪️";
+  const isFlipCard = card.names && card.names.length > 1;
+  const otherName = isFlipCard && card.names.filter(n => n !== card.name)[0];
+
+  const originalEmbed = await generateEmbed(card, isFlipCard, otherName);
+  msg.channel.send(originalEmbed).then(embedMsg => {
     if (!isFlipCard) return;
     embedMsg.react(flipSymbol);
     const filter = (reaction, user) =>
@@ -171,8 +176,34 @@ async function sendEmbed(msg, card) {
     const collector = embedMsg.createReactionCollector(filter, {
       time: 1000 * 60 * 5,
     });
-    collector.on("collect", r => {
-      console.log("Card flipped!");
+    let flipCount = 0;
+    let flippedEmbed;
+    collector.on("collect", async r => {
+      if (flipCount !== 0) {
+        flipCount++;
+        return embedMsg.edit(flipCount % 2 == 0 ? flippedEmbed : originalEmbed);
+      }
+      await mtg.card
+        .where({ name: otherName })
+        .then(cards =>
+          cards
+            .reduce((list, current) => {
+              const foundIndex = list.findIndex(n => n.name === current.name);
+              if (foundIndex === -1) {
+                return list.concat(current);
+              }
+              return list;
+            }, [])
+            .filter(card => card.name.toLowerCase() === otherName.toLowerCase())
+        )
+        .then(async ([card]) => {
+          flipCount++;
+          const isFlipCard = true;
+          const otherName =
+            isFlipCard && card.names.filter(n => n !== card.name)[0];
+          flippedEmbed = await generateEmbed(card, isFlipCard, otherName);
+          embedMsg.edit(flippedEmbed);
+        });
     });
   });
 }
