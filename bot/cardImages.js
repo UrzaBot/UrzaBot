@@ -56,6 +56,53 @@ function replyWithCardImage(msg) {
 /*----------------------------------------------------------------------------*/
 /* Helper functions
 /*----------------------------------------------------------------------------*/
+function convertText(text) {
+  const symbolsMap = {
+    X: "<:manax:724462885149081683>",
+    "W/U": "<:manawu:724461530531495977>",
+    "U/B": "<:manaub:724461530426507324>",
+    "W/P": "<:manawp:724461530422181939>",
+    W: "<:manaw:724461530380238861>",
+    "U/P": "<:manaup:724461530351140925>",
+    T: "<:tap:724461530233569330>",
+    "U/R": "<:manaur:724461530200145981>",
+    "R/W": "<:manarw:724461530128711680>",
+    G: "<:manag:724461530107740180>",
+    "R/G": "<:manarg:724461530099351562>",
+    U: "<:manau:724461529981779979>",
+    Q: "<:untap:724461529973653515>",
+    B: "<:manab:724461529889767504>",
+    E: "<:energy:724461529885442058>",
+    "R/P": "<:manarp:724461529860407337>",
+    "G/U": "<:managu:724461529843367936>",
+    C: "<:manac:724461529822396446>",
+    S: "<:manas:724461529818464287>",
+    "G/P": "<:managp:724461529818202122>",
+    "B/G": "<:manabg:724461529759744020>",
+    R: "<:manar:724461529734447186>",
+    "B/P": "<:manabp:724461529650692177>",
+    "B/R":"<:manabr:724461529637978163>",
+    "7":"<:mana7:724461528375361556>",
+    "20":"<:mana20:724461528274698300>",
+    "16":"<:mana16:724461528257921024>",
+    "11":"<:mana11:724461528211914762>",
+
+    "2": "<:mana2:724461527750672476>",
+    "5": "<:mana5:724461528090279957>",
+  };
+  function matcher(match, ...groups) {
+    const string = groups.pop();
+    const offset = groups.pop();
+    groups.forEach(symbol => {
+      const regex = new RegExp(`\\{${symbol}\\}`);
+      text = text.replace(regex, symbolsMap[symbol] || `{${symbol}}`);
+    });
+    return text;
+  }
+  text.replace(/{(.+?)}/g, matcher);
+  return text;
+}
+
 async function sendEmbed(msg, card) {
   let embed;
   if (!card.imageUrl) {
@@ -64,25 +111,24 @@ async function sendEmbed(msg, card) {
         `https://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[${card.name}]`
       )
       .then(r => r.data.match(/multiverseid=(\d+)"/)[0].slice(13, -1));
-    if (multiverseid)
+    if (multiverseid) {
       card.imageUrl = `https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${multiverseid}&type=card`;
+    }
   }
+  embed = new Discord.MessageEmbed()
+    .setTitle(card.name + "\t" + convertText(card.manaCost))
+    .addField(card.type, convertText(card.text))
+    .addFields(
+      { name: "Set", value: card.setName, inline: true },
+      { name: "Rarity", value: card.rarity, inline: true },
+      {
+        name: card.loyalty ? "Loyalty" : "Stats",
+        value: card.loyalty || `${card.power}/${card.toughness}`,
+        inline: true,
+      }
+    );
   if (card.imageUrl) {
-    embed = new Discord.MessageEmbed()
-      .setTitle(card.name)
-      .addField(card.type, card.text)
-      .setImage(card.imageUrl);
-  } else {
-    //console.log(card);
-    embed = new Discord.MessageEmbed()
-      .setTitle(card.name)
-      .addFields(
-        { name: "Type", value: card.type, inline: true },
-        { name: "Cost", value: card.manaCost, inline: true },
-        { name: "Text", value: card.text },
-        { name: "Set", value: card.setName, inline: true },
-        { name: "Rarity", value: card.rarity, inline: true }
-      );
+    embed.setImage(card.imageUrl);
   }
   msg.channel.send(embed);
 }
