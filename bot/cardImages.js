@@ -151,16 +151,17 @@ async function sendEmbed(msg, card) {
 }
 
 function pollForCorrectCard(name, msg, matchingCards) {
+  const xMark = "❌";
   return msg.channel
     .send(
       `I found several cards matching ${name}. Which did you mean?\n${matchingCards
         .reduce(
-          (list, card, idx) =>
-            idx === emojisForMultipleCardResults.length
+          (list, card, idx, { length }) =>
+            idx < emojisForMultipleCardResults.length
               ? list +
-                "❌ None of these\n(Too many results to show them all...) "
-              : idx < emojisForMultipleCardResults.length
-              ? list + `${discordEmojiForNumber(idx)} ${card.name}\n`
+                `${discordEmojiForNumber(idx)} ${card.name}\n${
+                  idx === length - 1 ? "❌ (None of these)\n" : ""
+                }`
               : list,
           ""
         )
@@ -169,7 +170,7 @@ function pollForCorrectCard(name, msg, matchingCards) {
     .then(async pollMessage => {
       const filter = (reaction, user) =>
         (emojisForMultipleCardResults.includes(reaction.emoji.name) ||
-          reaction.emoji.name === "❌") &&
+          reaction.emoji.name === xMark) &&
         user.id !== pollMessage.author.id;
       const collector = pollMessage.createReactionCollector(filter, {
         max: 1,
@@ -177,12 +178,18 @@ function pollForCorrectCard(name, msg, matchingCards) {
       });
       //console.log(matchingCards.length);
       const doneReacting = Promise.all(
-        matchingCards.map((x, idx) => {
+        matchingCards.map((x, idx, { length }) => {
           if (idx === emojisForMultipleCardResults.length + 1) {
-            return pollMessage.react("❌");
+            return pollMessage.react(xMark);
           }
           const emoji = discordEmojiForNumber(idx);
-          return emoji ? pollMessage.react(emoji) : Promise.resolve();
+          return emoji
+            ? pollMessage
+                .react(emoji)
+                .then(() =>
+                  idx === length - 1 ? pollMessage.react(xMark) : null
+                )
+            : Promise.resolve();
         })
       );
 
