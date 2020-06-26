@@ -320,6 +320,7 @@ function pollForCorrectCard(name, msg, matchingCards) {
         });
     });
 }
+
 const emojisForMultipleCardResults = [
   "1️⃣",
   "2️⃣",
