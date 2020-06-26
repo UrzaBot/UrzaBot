@@ -13,5 +13,4 @@ function getMTGArticles(){
 
 client.on("message", cardImages);
 
-
-module.exports = client;
+client.login(process.env.BOT_TOKEN);
