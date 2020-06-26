@@ -200,7 +200,6 @@ async function generateEmbed(
   return embed;
 }
 
-
 async function sendEmbed(msg, card) {
   const flipSymbol = "↪️";
   const isFlipCard = card.names && card.names.length > 1;
