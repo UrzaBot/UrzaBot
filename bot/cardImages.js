@@ -340,6 +340,7 @@ const emojisForMultipleCardResults = [
   "❤️",
   "💚",
 ];
+
 function discordEmojiForNumber(number) {
   return number < emojisForMultipleCardResults.length
     ? emojisForMultipleCardResults[number]
