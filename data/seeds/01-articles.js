@@ -1,4 +1,4 @@
-const { getParsedArticles } = require("../../utils/mtgNewsArticles");
+const { getParsedArticles } = require("../../utils/requestNewsArticles");
 
 exports.seed = async function (knex) {
   let list = await getParsedArticles();
