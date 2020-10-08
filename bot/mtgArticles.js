@@ -5,7 +5,7 @@ async function testArticles(msg){
   if (author.bot) return;
   const isTestMessage = content.match(/test/ig);
   if (!isTestMessage) return;
-  msg.reply(await knex("articles"))
+  knex("articles").then(r => r.map(console.log));
 }
 
 module.exports = testArticles;
