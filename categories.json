@@ -1,0 +1,92 @@
+[
+  {
+    "id": 22,
+    "url": "https://magic.wizards.com/en/articles/archive/card-image-gallery/zendikar-rising-art-cards-2020-09-18",
+    "title": "Zendikar Rising Art Cards",
+    "author": "Wizards of the Coast",
+    "date": "2020-09-18",
+    "image_url": "https://media.magic.wizards.com/images/hero/23y9edsyos_icon.jpg",
+    "category": "Card Image Gallery"
+  },
+  {
+    "id": 41,
+    "url": "https://magic.wizards.com/en/articles/archive/card-preview/zendikar-rising-commander-decklists-2020-09-09",
+    "title": "Zendikar Rising Commander Decklists",
+    "author": "Wizards of the Coast",
+    "date": "2020-09-09",
+    "image_url": "https://media.magic.wizards.com/images/hero/anowon_icon.jpg",
+    "category": "Card Preview"
+  },
+  {
+    "id": 24,
+    "url": "https://magic.wizards.com/en/articles/archive/feature/zendikar-rising-art-descriptions-2020-09-17",
+    "title": "Zendikar Rising Art Descriptions",
+    "author": "Blake Rasmussen",
+    "date": "2020-09-17",
+    "image_url": "https://media.magic.wizards.com/images/hero/soul-shatter_icon.jpg",
+    "category": "Feature"
+  },
+  {
+    "id": 78,
+    "url": "https://magic.wizards.com/en/articles/archive/magic-companion-updates/pauper-sleep-mode-and-more-companion-2020-08-05",
+    "title": "Pauper, Sleep Mode, and More in Companion",
+    "author": "Bill Stark",
+    "date": "2020-08-05",
+    "image_url": "https://media.magic.wizards.com/images/hero/rs48_415382_vignette_notes_clipboard_2_0.jpg",
+    "category": "Magic Companion Updates"
+  },
+  {
+    "id": 27,
+    "url": "https://magic.wizards.com/en/articles/archive/magic-digital/mtg-arena-state-game-september-2020-09-15",
+    "title": "MTG Arena: State of the Game – September 2020",
+    "author": "Wizards of the Coast",
+    "date": "2020-09-15",
+    "image_url": "https://media.magic.wizards.com/images/hero/MTGA2019_News_icon.jpg",
+    "category": "Magic Digital"
+  },
+  {
+    "id": 2,
+    "url": "https://magic.wizards.com/en/articles/archive/magic-online/magic-online-announcements-october-06-2020",
+    "title": "Magic Online Announcements, October 6, 2020",
+    "author": "Wizards of the Coast",
+    "date": "2020-10-06",
+    "image_url": "https://media.magic.wizards.com/images/hero/33sjfovjbc_mtgo_icon.jpg",
+    "category": "Magic Online"
+  },
+  {
+    "id": 7,
+    "url": "https://magic.wizards.com/en/articles/archive/magic-story/episode-5-two-guardians-2020-09-30",
+    "title": "Episode 5: The Two Guardians",
+    "author": "A. T. Greenblatt",
+    "date": "2020-09-30",
+    "image_url": "https://media.magic.wizards.com/images/hero/nissa-of-shadowed-boughsj_icon.jpg",
+    "category": "Magic Story"
+  },
+  {
+    "id": 3,
+    "url": "https://magic.wizards.com/en/articles/archive/making-magic/odds-ends-zendikar-rising-2020-10-05",
+    "title": "Odds & Ends: Zendikar Rising",
+    "author": "Mark Rosewater",
+    "date": "2020-10-05",
+    "image_url": "https://media.magic.wizards.com/images/hero/into_the_roil_icon.jpg",
+    "category": "Making Magic"
+  },
+  {
+    "id": 4,
+    "url": "https://magic.wizards.com/en/articles/archive/news/commander-legends-global-release-moved-november-20-2020-2020-10-02",
+    "title": "Commander Legends Global Release Moved to November 20, 2020",
+    "author": "Wizards of the Coast",
+    "date": "2020-10-02",
+    "image_url": "https://media.magic.wizards.com/images/hero/EN_news_default_wizards_Icon.jpg",
+    "category": "News"
+  },
+  {
+    "id": 6,
+    "url": "https://magic.wizards.com/en/articles/archive/wallpaper/moraug-fury-akoum-2020-09-30",
+    "title": "Moraug, Fury of Akoum",
+    "author": " Dominik Mayer",
+    "date": "2020-09-30",
+    "image_url": "https://media.magic.wizards.com/images/hero/moraug-fury-of-akoum_icon.jpg",
+    "category": "Wallpaper"
+  }
+]

@@ -6,7 +6,7 @@ async function testArticles(msg) {
   if (author.bot) return;
   const isTestMessage = content.match(/test/gi);
   if (!isTestMessage) return;
-  console.log(guild)
+  // console.log(guild)
   const newArticles = await getNewArticles();
   newArticles.map(article => {
     console.log(article);

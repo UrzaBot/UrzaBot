@@ -2,7 +2,7 @@ const { getParsedArticles } = require("../../utils/requestNewsArticles");
 
 exports.seed = async function (knex) {
   let list = await getParsedArticles();
-  for (let i = 10; i < 50; i+=10) {
+  for (let i = 10; i < 100; i+=10) {
     const additionalList = await getParsedArticles(
       `https://magic.wizards.com/en/search-magic-ajax?offset=${i}`
     );
