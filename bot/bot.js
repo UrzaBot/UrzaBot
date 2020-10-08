@@ -13,6 +13,6 @@ function getMTGArticles(){
 }
 
 client.on("message", cardImages);
-client.on("message", mtgArticles)
+// client.on("message", mtgArticles)
 
 client.login(process.env.BOT_TOKEN);
