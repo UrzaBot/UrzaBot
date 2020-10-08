@@ -108,3 +108,6 @@ dist
 
 # SQL test files
 *.sql
+
+# SQLite databases
+*.db3
