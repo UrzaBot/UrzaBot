@@ -1,11 +1,15 @@
 const knex = require("../data/dbConfig");
+const { getParsedArticles } = require("../utils/mtgNewsArticles");
 
-async function testArticles(msg){
+async function testArticles(msg) {
   const { content, author } = msg;
   if (author.bot) return;
-  const isTestMessage = content.match(/test/ig);
+  const isTestMessage = content.match(/test/gi);
   if (!isTestMessage) return;
-  knex("articles").then(r => r.map(console.log));
+  const currentArticles = await getParsedArticles();
+  currentArticles.forEach(({ url }) => {
+    knex("articles").where({url}).then(console.log)
+  });
 }
 
 module.exports = testArticles;

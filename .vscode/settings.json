@@ -1,5 +1,14 @@
 {
   "cSpell.words": [
     "mtgsdk"
-  ]
+  ],
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "database": "./data/dev.db3",
+      "name": "UrzaBot"
+    }
+  ],
+  "sqltools.useNodeRuntime": true
 }
