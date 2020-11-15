@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const cardImages = require("./cardImages");
+const pingAndy = require("./pingAndy");
 const mtgArticles = require("./mtgArticles");
 const client = new Discord.Client();
 
@@ -14,5 +15,6 @@ function getMTGArticles(){
 
 client.on("message", cardImages);
 // client.on("message", mtgArticles)
+client.on("message", pingAndy);
 
 client.login(process.env.BOT_TOKEN);
